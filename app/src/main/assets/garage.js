@@ -88,7 +88,7 @@ function serviceItems(v,all){
 function historyList(v,limit){
  let rows=state.records.filter(r=>Number(r.slot)===Number(v.slot)).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||Number(b.km||0)-Number(a.km||0));
  if(limit)rows=rows.slice(0,limit);
- return rows.length?'<div class="g-card g-list">'+rows.map(r=>'<button data-ga="record" class="g-listrow"><span class="g-historydate"><strong>'+e(niceDate(r.date))+'</strong><small>'+e(niceKm(r.km))+'</small></span><span class="g-itemicon">🔧</span><span class="g-rowtext"><strong>'+e((r.type||'Service')+' Service'.replace(' Service Service',' Service'))+'</strong><small>'+e((r.items||[]).map(id=>catalog.find(c=>c[0]===id)?.[1]||id).slice(0,3).join(', ')||r.notes||'Service recorded')+'</small></span><span class="g-price">'+e(currency(r.cost))+'</span><span class="g-chevron">›</span></button>').join('')+'</div>':
+ return rows.length?'<div class="g-card g-list">'+rows.map(r=>'<div class="g-service-entry"><button data-ga="record" class="g-listrow"><span class="g-historydate"><strong>'+e(niceDate(r.date))+'</strong><small>'+e(niceKm(r.km))+'</small></span><span class="g-itemicon">🔧</span><span class="g-rowtext"><strong>'+e((r.type||'Service')+' Service'.replace(' Service Service',' Service'))+'</strong><small>'+e((r.items||[]).map(id=>catalog.find(c=>c[0]===id)?.[1]||id).slice(0,3).join(', ')||r.notes||'Service recorded')+'</small></span><span class="g-price">'+e(currency(r.cost))+'</span><span class="g-chevron">›</span></button><div class="g-receipt-slot" data-greceipt-record="'+e(r.id)+'" data-greceipt-vehicle="'+e(v.slot)+'"></div></div>').join('')+'</div>':
  '<div class="g-card g-empty"><div class="g-empty-icon">📋</div><strong>No service records yet</strong><p>Tap Log Service to record your first maintenance entry.</p></div>';
 }
 function slotBar(){
@@ -166,6 +166,7 @@ function renderGarage(){
  gHeader.innerHTML='<div style="display:flex;align-items:center;gap:4px">'+(mode!=='garage'?'<button class="g-ico" data-ga="garage" aria-label="Go back">‹</button>':'')+'<span class="g-title">'+e(headings[mode]||'Çar Service')+'</span></div><div class="g-ctl"><button class="g-ico" data-ga="reminders" aria-label="Reminders">♧</button><button class="g-ico" data-ga="settings" aria-label="Settings">⚙</button></div>';
  garages.innerHTML=mode==='garage'?garageScreen():mode==='reminders'?remindersScreen():mode==='history'?historyScreen():mode==='fuel'?fuelScreen():garageScreen();
  if(mode==='garage'&&typeof window.renderGarageCustomMaintenance==='function')window.renderGarageCustomMaintenance();
+ if(typeof window.renderServiceReceiptButtons==='function')window.renderServiceReceiptButtons();
  gBottom.innerHTML=[['garage','🚘','Garage'],['reminders','🔔','Reminder'],['history','📋','Service'],['settings','👤','Profile']].map(([id,ic,label])=>'<button class="'+(mode===id?'active':'')+'" data-ga="'+id+'"><span class="g-navico">'+ic+'</span>'+label+'</button>').join('');
  fab.style.display=mode==='fuel'?'none':'grid';fabMenu.style.display=menuOpen?'block':'none';
 }
