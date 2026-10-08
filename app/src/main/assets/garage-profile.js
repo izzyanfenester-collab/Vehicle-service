@@ -33,7 +33,7 @@ function build(){
  row('💰','Total Maintenance Spending',fmtCost(spending)+' recorded','history')+
  row('⚙️','Settings','Configure reminder intervals and maintenance checklist','maintenance')+
  '</div><div class="gpSection">About</div><div class="gpGroup">'+
- row('ℹ️','Çar Service','Version 1.7 · Offline vehicle maintenance','about')+
+ row('ℹ️','Çar Service','Version 1.8 · Offline vehicle maintenance','about')+
  '</div><p class="gpNote">Data is saved locally on your device. No account or cloud service is required. Back up your records before uninstalling the application.</p>';
 }
 function setBottom(){
@@ -69,7 +69,7 @@ function editDialog(){
 }
 function about(){
  const bg=document.createElement('div');bg.className='gpDialogBg';
- bg.innerHTML='<div class="gpDialog"><h3>Çar Service v1.7</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
+ bg.innerHTML='<div class="gpDialog"><h3>Çar Service v1.8</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
  profile.appendChild(bg);
 }
 profile.addEventListener('click',ev=>{
