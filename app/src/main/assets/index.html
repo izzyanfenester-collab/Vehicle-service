@@ -259,14 +259,9 @@ render();
   };
 
   const prevVehicle=renderVehicle,prevHome=renderHome,prevSettings=renderSettings;
-  renderVehicle=function(){
-    prevVehicle();
-    const v=state.vehicles[slot];if(v)$('vehiclePage').insertAdjacentHTML('beforeend',schedulerSection(v));
-  };
-  renderSettings=function(){
-    prevSettings();
-    const v=state.vehicles[slot];if(v)$('settingsPage').insertAdjacentHTML('beforeend',schedulerSection(v));
-  };
+  // Custom maintenance schedules now appear exclusively in the current vehicle's Garage view.
+  renderVehicle=function(){ prevVehicle(); };
+  renderSettings=function(){ prevSettings(); };
   renderHome=function(){
     prevHome();
     const active=state.vehicles.filter(v=>v&&v.type==='car');
