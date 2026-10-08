@@ -65,7 +65,7 @@ function secTitle(txt,action,label){return '<div class="g-title-row"><h2 class="
 function vehicleCard(v){
  const photo=v.photo?'<img class="g-avatar" src="'+e(v.photo)+'" alt="Vehicle photo">':'<div class="g-avatar-empty">🚗</div>';
  return '<div class="g-card g-vehicle"><button class="g-photo-button" data-ga="photo" aria-label="Add vehicle photo">'+photo+'<span class="g-camera">📷</span></button>'+
- '<button data-ga="edit" class="g-vinfo" style="background:transparent;color:inherit;padding:0"><h2>'+e(v.year?v.year+' ':'')+e(v.brand+' '+v.model)+'</h2><small>'+e(v.variant||v.type==='moto'?'':'')+'</small><strong>'+e(v.plate||'No registration number')+'</strong></button>'+
+ '<button data-ga="edit" class="g-vinfo" style="background:transparent;color:inherit;padding:0"><h2>'+e(v.year?v.year+' ':'')+e(v.brand+' '+v.model)+'</h2><small>'+e(v.variant||(v.type==='moto'?'Motorcycle':'Car'))+'</small><strong>'+e(v.plate||'No registration number')+'</strong></button>'+
  '<button class="g-odo" data-ga="odometer"><span><small>Odometer</small><b>'+e(niceKm(v.currentKm))+'</b></span><span class="g-chevron">›</span></button></div>';
 }
 function tiles(v){
