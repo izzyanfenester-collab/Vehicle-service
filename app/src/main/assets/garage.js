@@ -82,7 +82,7 @@ function tiles(v){
 function serviceItems(v,all){
  const rows=servicePreview(v);
  if(all){const existing=new Set(rows.map(x=>x.item[0]));list(v).forEach(x=>{if(!existing.has(x.item[0]))rows.push({item:x.item,st:serviceStatus(v,x.item)})});}
- return '<div class="g-card g-list">'+rows.map(({item,st})=>'<button class="g-listrow" data-ga="'+(item[0]==='wheel_alignment'||item[0]==='ac_flush'?'reminders':'record')+'">'+
+ return '<div class="g-card g-list">'+rows.map(({item,st})=>'<button class="g-listrow" data-ga="'+(item[0]==='wheel_alignment'||item[0]==='ac_flush'?'customMaintenance':'record')+'">'+
   '<span class="g-itemicon">'+(itemIcon[item[0]]||'🔧')+'</span><span class="g-rowtext"><strong>'+e(item[1])+'</strong><small>'+e(st.desc||item[4])+'</small></span>'+badge(st)+'<span class="g-chevron">›</span></button>').join('')+'</div>';
 }
 function historyList(v,limit){
@@ -100,6 +100,7 @@ function garageScreen(){
  if(!v)return '<div class="g-card g-empty"><div class="g-empty-icon">🚘</div><strong>Welcome to Izzyan’s Garage</strong><p>Add your first vehicle to track maintenance, renewal dates, costs and fuel.</p><button class="g-primary" data-ga="newVehicle">+ Add Vehicle</button></div>';
  const top=slotBar()+vehicleCard(v)+tiles(v);
  return top+'<div class="g-section">'+secTitle('Upcoming Service Items','allItems')+serviceItems(v,false)+'</div>'+
+ '<div id="gCustomRemindersAnchor"></div>' +
  '<div class="g-section">'+secTitle('Service History','history')+historyList(v,3)+'</div>'+
  '<div class="g-actions"><button class="g-primary" data-ga="record">🔧 Log Service</button><button class="g-secondary" data-ga="fuel">⛽ Log Fuel</button></div>';
 }
@@ -109,7 +110,7 @@ function remindersScreen(){
  const header=slotBar()+'<div class="g-section">'+secTitle('Renewal Reminders')+'<div class="g-card g-list">'+
  exp.map(([label,date])=>{const st=statDate(date);return '<button data-ga="edit" class="g-listrow"><span class="g-itemicon">📅</span><span class="g-rowtext"><strong>'+label+'</strong><small>'+niceDate(date)+' · '+st.detail+'</small></span>'+badge({kind:st.style,label:st.label})+'<span class="g-chevron">›</span></button>'}).join('')+'</div></div>';
  const custom=v.type==='car'?'<div class="g-section">'+secTitle('Custom Maintenance Reminders')+
- '<div class="g-card g-list">'+['wheel_alignment','ac_flush'].map(id=>{const c=catalog.find(x=>x[0]===id);const st=serviceStatus(v,c);return '<button data-ga="settings" class="g-listrow"><span class="g-itemicon">'+(itemIcon[id]||'🔧')+'</span><span class="g-rowtext"><strong>'+e(c[1])+'</strong><small>'+e(st.desc)+'</small></span>'+badge(st)+'<span class="g-chevron">›</span></button>'}).join('')+'</div><p class="g-note">Tap to set last/next mileage or date in Settings. A/C flushing and alignment are not mandatory interval-based services.</p></div>':'';
+ '<div class="g-card g-list">'+['wheel_alignment','ac_flush'].map(id=>{const c=catalog.find(x=>x[0]===id);const st=serviceStatus(v,c);return '<button data-ga="customMaintenance" class="g-listrow"><span class="g-itemicon">'+(itemIcon[id]||'🔧')+'</span><span class="g-rowtext"><strong>'+e(c[1])+'</strong><small>'+e(st.desc)+'</small></span>'+badge(st)+'<span class="g-chevron">›</span></button>'}).join('')+'</div><p class="g-note">Tap to edit the schedule for this vehicle in Garage. A/C flushing and alignment are not mandatory interval-based services.</p></div>':'';
  return header+custom+'<div class="g-section">'+secTitle('All Maintenance Items')+serviceItems(v,true)+'</div>';
 }
 function historyScreen(){
@@ -164,6 +165,7 @@ function renderGarage(){
  const headings={garage:'Izzyan’s Garage',reminders:'Reminders',history:'Service Records',fuel:'Log Fuel'};
  gHeader.innerHTML='<div style="display:flex;align-items:center;gap:4px">'+(mode!=='garage'?'<button class="g-ico" data-ga="garage" aria-label="Go back">‹</button>':'')+'<span class="g-title">'+e(headings[mode]||'Izzyan’s Garage')+'</span></div><div class="g-ctl"><button class="g-ico" data-ga="reminders" aria-label="Reminders">♧</button><button class="g-ico" data-ga="settings" aria-label="Settings">⚙</button></div>';
  garages.innerHTML=mode==='garage'?garageScreen():mode==='reminders'?remindersScreen():mode==='history'?historyScreen():mode==='fuel'?fuelScreen():garageScreen();
+ if(mode==='garage'&&typeof window.renderGarageCustomMaintenance==='function')window.renderGarageCustomMaintenance();
  gBottom.innerHTML=[['garage','🚘','Garage'],['reminders','🔔','Reminder'],['history','📋','Service'],['settings','👤','Profile']].map(([id,ic,label])=>'<button class="'+(mode===id?'active':'')+'" data-ga="'+id+'"><span class="g-navico">'+ic+'</span>'+label+'</button>').join('');
  fab.style.display=mode==='fuel'?'none':'grid';fabMenu.style.display=menuOpen?'block':'none';
 }
@@ -184,6 +186,7 @@ function handleButton(action,button){
  case 'newVehicle':newVehicle();break;
  case 'record':show('legacy','recordPage');break;
  case 'reminders':show('reminders');break;
+ case 'customMaintenance':show('garage');if(typeof window.openGarageCustomMaintenance==='function')window.openGarageCustomMaintenance();break;
  case 'history':show('history');break;
  case 'allItems':show('reminders');break;
  case 'settings':show('legacy','settingsPage');break;
