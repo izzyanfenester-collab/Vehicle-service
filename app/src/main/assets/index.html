@@ -28,7 +28,7 @@ function deleteRecord(id){if(!confirm('Delete this record?'))return;state.record
 function renderSettings(){const v=state.vehicles[slot];$('settingsPage').innerHTML=`<section><h2>Settings</h2><p class="notice">Default intervals are estimates only. They depend on engine, fluid, transmission, year and usage. Adjust them to match your manufacturer manual, especially for motorcycles.</p><label>Set intervals for vehicle</label><select id="sSlot" onchange="slot=Number(this.value);renderSettings()">${state.vehicles.map((x,i)=>`<option value="${i}" ${i===slot?'selected':''}>${i+1}. ${esc(x?x.brand+' '+x.model:'Empty slot')}</option>`).join('')}</select>${v?list(v).map(x=>{let own=state.customIntervals[slot+'|'+x.item[0]];return `<div class="line"><div><strong>${esc(x.item[1])}</strong><small style="display:block">${esc(x.item[4])}</small><div class="grid"><div><label>Every km (0 = disabled)</label><input id="km_${x.item[0]}" type="number" min="0" value="${own?.km??x.item[2]}"></div><div><label>Every months (0 = disabled)</label><input id="mo_${x.item[0]}" type="number" min="0" value="${own?.months??x.item[3]}"></div></div></div></div>`}).join('')+`<div class="actions"><button onclick="saveIntervals()">Save intervals</button></div>`:'<p>Add a vehicle to configure intervals.</p>'}</section><section><h2>Backup & Restore</h2><p class="muted">Your records are stored locally on this phone. Export a backup before uninstalling or changing devices.</p><div class="actions"><button onclick="exportData()">Export JSON backup</button></div><label>Import JSON backup</label><input type="file" id="importFile" accept="application/json,.json"><button class="secondary" style="margin-top:8px" onclick="importData()">Import backup</button></section><section><h2>Safety notes</h2><p class="muted">Major/minor classifications are suggestions, not manufacturer instructions. A/C flushing is only recommended when justified by diagnosis. Alignment and balancing depend on tyre/suspension work or symptoms. Some electric vehicles require different maintenance.</p></section>`}
 function saveIntervals(){if(!state.vehicles[slot])return;list(state.vehicles[slot]).forEach(x=>{const id=x.item[0],km=Number($('km_'+id).value),months=Number($('mo_'+id).value);if(Number.isFinite(km)&&Number.isFinite(months)&&km>=0&&months>=0)state.customIntervals[slot+'|'+id]={km,months}});save();render();alert('Intervals saved.')}
 function exportData(){const data=JSON.stringify(state,null,2);const a=document.createElement('a');a.href='data:application/json;charset=utf-8,'+encodeURIComponent(data);a.download='my-vehicle-service-backup.json';a.click()}
-function importData(){const f=$('importFile').files[0];if(!f){alert('Please select a JSON file first.');return}const r=new FileReader();r.onload=()=>{try{const imported=JSON.parse(r.result);if(!Array.isArray(imported.vehicles)||!Array.isArray(imported.records)||imported.vehicles.length>5)throw Error('Invalid format');if(!confirm('Import will replace your current records. Continue?'))return;state={vehicles:imported.vehicles.concat(Array(5).fill(null)).slice(0,5).map((v,i)=>v?{...v,slot:i}:null),records:imported.records,customIntervals:imported.customIntervals||{}};save();render();alert('Backup imported successfully.')}catch(e){alert('Invalid backup: '+e.message)}};r.readAsText(f)}
+function importData(){const f=$('importFile').files[0];if(!f){alert('Please select a JSON file first.');return}const r=new FileReader();r.onload=()=>{try{const imported=JSON.parse(r.result);if(!Array.isArray(imported.vehicles)||!Array.isArray(imported.records)||imported.vehicles.length>5)throw Error('Invalid format');if(!confirm('Import will replace your current records. Continue?'))return;state={vehicles:imported.vehicles.concat(Array(5).fill(null)).slice(0,5).map((v,i)=>v?{...v,slot:i}:null),records:imported.records,customIntervals:imported.customIntervals||{},manualSchedules:imported.manualSchedules||{}};save();render();alert('Backup imported successfully.')}catch(e){alert('Invalid backup: '+e.message)}};r.readAsText(f)}
 function navigate(p){page=p;render()}function render(){['home','vehiclePage','recordPage','settingsPage'].forEach(x=>$(x).classList.toggle('hidden',x!==page));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('sel',x.dataset.page===page));renderHome();if(page==='vehiclePage')renderVehicle();if(page==='recordPage')renderRecords();if(page==='settingsPage')renderSettings();window.scrollTo(0,0)}document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>navigate(b.dataset.page));render();
 </script>
 <script>
@@ -127,6 +127,189 @@ renderHome=function(){oldHome();const root=$('home');root.insertAdjacentHTML('be
 document.addEventListener('change',function(e){if(e.target&&e.target.classList&&e.target.classList.contains('itemCheck'))updateSelectionEstimate();});
 document.querySelector('nav').addEventListener('click',function(e){const b=e.target.closest('button[data-page]');if(!b)return;e.preventDefault();e.stopPropagation();page=b.dataset.page;render();},true);
 render();
+})();
+</script>
+
+<!-- Custom Alignment / A/C Reminders v1.2 -->
+<script>
+(function() {
+  'use strict';
+
+  const reminders = [
+    {id:'wheel_alignment', title:'Wheel Alignment', cost:[40,100],
+     info:'Condition-based service. You choose the reminder date or mileage; alignment is not automatically needed at every interval.'},
+    {id:'ac_flush', title:'A/C Flushing', cost:[180,480],
+     info:'Condition-based service. A/C flushing is not routine maintenance unless inspection or system repair justifies it.'}
+  ];
+  state.manualSchedules = state.manualSchedules && typeof state.manualSchedules === 'object' ? state.manualSchedules : {};
+  const scheduleKey = (v,id) => String(v.slot)+'|'+id;
+  const scheduleFor = (v,id) => state.manualSchedules?.[scheduleKey(v,id)] || {};
+  const currency = n => 'RM '+Number(n).toLocaleString('en-MY',{minimumFractionDigits:0,maximumFractionDigits:2});
+  const kmText = n => Number(n).toLocaleString('en-MY')+' km';
+
+  function statusFor(v,item) {
+    const s=scheduleFor(v,item.id);
+    const nextKm=s.nextKm==null||s.nextKm===''?null:Number(s.nextKm);
+    const nextDate=s.nextDate||'';
+    const remainingKm=nextKm===null?null:nextKm-Number(v.currentKm||0);
+    const remainingDays=nextDate?dayDiff(nextDate):null;
+    let type='not-set',label='Not scheduled';
+    if(nextDate||nextKm!==null) {
+      type=(remainingKm!==null&&remainingKm<=0)||(remainingDays!==null&&remainingDays<=0)?'overdue':
+          (remainingKm!==null&&remainingKm<=1000)||(remainingDays!==null&&remainingDays<=30)?'soon':'planned';
+      label=type==='overdue'?'Service Due':type==='soon'?'Due Soon':'Scheduled';
+    }
+    return {s,nextKm,nextDate,remainingKm,remainingDays,type,label};
+  }
+  function statusDetail(v,item) {
+    const st=statusFor(v,item);
+    if(st.type==='not-set')return 'Set your own next date or mileage';
+    const parts=[];
+    if(st.nextDate)parts.push('Target date: '+st.nextDate+(st.remainingDays!==null?' ('+(st.remainingDays>=0?st.remainingDays+' days left':Math.abs(st.remainingDays)+' days overdue')+')':''));
+    if(st.nextKm!==null)parts.push('Target mileage: '+kmText(st.nextKm)+' ('+(st.remainingKm>=0?kmText(st.remainingKm)+' left':kmText(Math.abs(st.remainingKm))+' overdue')+')');
+    return parts.join(' · ');
+  }
+  function statusBadge(t) {
+    const klass=t==='overdue'?'late':t==='soon'?'warn':'';
+    const text=t==='overdue'?'Service Due':t==='soon'?'Due Soon':t==='planned'?'Scheduled':'Not Set';
+    return '<span class="pill '+klass+'">'+text+'</span>';
+  }
+  function message(v,item) {
+    const s=statusFor(v,item);
+    const money=s.s.estimatedCost==null?'Estimated '+currency(item.cost[0])+' – '+currency(item.cost[1]):'Your budget: '+currency(s.s.estimatedCost);
+    return '<div class="line"><div><strong>'+esc(item.title)+'</strong><br><small>'+esc(statusDetail(v,item))+'</small><br><small>'+esc(money)+'</small></div>'+statusBadge(s.type)+'</div>';
+  }
+  function schedulerSection(v) {
+    if(v.type!=='car')return '';
+    return '<section class="manual-schedule">'+
+      '<h2>🛞 Custom Maintenance Reminders</h2>'+
+      '<p class="notice">Set your last and next service date or mileage for Wheel Alignment and A/C Flushing. The app checks both targets whenever opened or when you update the odometer. The earlier target determines the reminder. Due Soon starts within 30 days or 1,000 km.</p>'+
+      reminders.map(function(item){
+        const s=scheduleFor(v,item.id);
+        const value=(field) => s[field] == null ? '' : esc(s[field]);
+        const status=statusFor(v,item);
+        const id=item.id;
+        return '<div class="card" style="box-shadow:none;margin:12px 0;padding:12px">'+
+          '<div class="head"><strong>'+esc(item.title)+'</strong>'+statusBadge(status.type)+'</div>'+
+          '<p><small>'+esc(item.info)+'</small></p>'+
+          '<div class="grid">'+
+            '<div><label>Last service date</label><input type="date" id="'+id+'_lastDate" value="'+value('lastDate')+'"></div>'+
+            '<div><label>Last service mileage (km)</label><input type="number" min="0" id="'+id+'_lastKm" value="'+value('lastKm')+'"></div>'+
+            '<div><label>Next service date</label><input type="date" id="'+id+'_nextDate" value="'+value('nextDate')+'"></div>'+
+            '<div><label>Next service mileage (km)</label><input type="number" min="0" id="'+id+'_nextKm" value="'+value('nextKm')+'"></div>'+
+            '<div><label>Repeat every months (optional)</label><input type="number" min="0" id="'+id+'_intervalMonths" value="'+value('intervalMonths')+'" placeholder="0 = manual only"></div>'+
+            '<div><label>Repeat every km (optional)</label><input type="number" min="0" id="'+id+'_intervalKm" value="'+value('intervalKm')+'" placeholder="0 = manual only"></div>'+
+          '</div><label>Estimated cost (RM, optional)</label>'+
+          '<input type="number" min="0" step="0.01" id="'+id+'_estimatedCost" value="'+value('estimatedCost')+'" placeholder="'+item.cost[0]+' – '+item.cost[1]+'">'+
+          '<p class="notice">'+esc(statusDetail(v,item))+'</p>'+
+          '<div class="actions"><button type="button" class="secondary" onclick="calculateManualReminder(\''+id+'\')">Suggest Next</button>'+
+          '<button type="button" onclick="saveManualReminder(\''+id+'\')">Save Reminder</button>'+
+          '<button type="button" class="secondary" onclick="completeManualReminder(\''+id+'\')">Mark Completed</button></div>'+
+          '</div>';
+      }).join('')+'</section>';
+  }
+  window.calculateManualReminder=function(id) {
+    const item=reminders.find(x=>x.id===id);
+    if(!item)return;
+    const lastDate=$(id+'_lastDate').value;
+    const lastKm=$(id+'_lastKm').value;
+    const months=Number($(id+'_intervalMonths').value||0);
+    const kms=Number($(id+'_intervalKm').value||0);
+    let calculated=false;
+    if(lastDate&&months>0){$(id+'_nextDate').value=addMonths(lastDate,months);calculated=true;}
+    if(lastKm!==''&&kms>0){$(id+'_nextKm').value=String(Number(lastKm)+kms);calculated=true;}
+    if(!calculated){alert('Enter your last service details and an optional repeat interval, or set the next date/mileage manually.');return;}
+    alert('Suggested next service filled in. Tap Save Reminder to enable alerts.');
+  };
+  window.saveManualReminder=function(id) {
+    const v=state.vehicles[slot],item=reminders.find(x=>x.id===id);
+    if(!v||!item||v.type!=='car')return;
+    const val=(name)=>$(id+'_'+name).value;
+    const lastDate=val('lastDate'), lastKm=val('lastKm'), nextDate=val('nextDate'), nextKm=val('nextKm');
+    const intervalMonths=val('intervalMonths'),intervalKm=val('intervalKm'),estimatedCost=val('estimatedCost');
+    if([lastKm,nextKm,intervalMonths,intervalKm,estimatedCost].some(s=>s!==''&&(!Number.isFinite(Number(s))||Number(s)<0))){alert('Mileage, repeat intervals and costs must be zero or greater.');return;}
+    if(lastKm!==''&&Number(lastKm)>Number(v.currentKm||0)){alert('Last service mileage cannot exceed the current odometer. Update the vehicle odometer first.');return;}
+    let suggestedDate=nextDate,suggestedKm=nextKm;
+    if(!suggestedDate&&lastDate&&Number(intervalMonths)>0)suggestedDate=addMonths(lastDate,Number(intervalMonths));
+    if(suggestedKm===''&&lastKm!==''&&Number(intervalKm)>0)suggestedKm=String(Number(lastKm)+Number(intervalKm));
+    if(suggestedKm!==''&&lastKm!==''&&Number(suggestedKm)<=Number(lastKm)){alert('Next mileage must be greater than last service mileage.');return;}
+    if(!suggestedDate&&suggestedKm===''){alert('Please set a next service date, next mileage, or a repeat interval to activate automatic reminders.');return;}
+    state.manualSchedules[scheduleKey(v,id)]={
+      lastDate,lastKm:lastKm===''?null:Number(lastKm),
+      nextDate:suggestedDate,nextKm:suggestedKm===''?null:Number(suggestedKm),
+      intervalMonths:Number(intervalMonths||0),intervalKm:Number(intervalKm||0),
+      estimatedCost:estimatedCost===''?null:Number(estimatedCost)
+    };
+    save();render();alert(item.title+' reminder saved. Your dashboard will show when the service is due.');
+  };
+  window.completeManualReminder=function(id) {
+    const v=state.vehicles[slot],item=reminders.find(x=>x.id===id);
+    if(!v||!item)return;
+    if(!confirm('Mark '+item.title+' completed today at '+kmText(v.currentKm||0)+'?'))return;
+    const s=scheduleFor(v,id);
+    const today=iso(new Date());
+    const intervalMonths=Number(s.intervalMonths||0),intervalKm=Number(s.intervalKm||0);
+    const nextDate=intervalMonths>0?addMonths(today,intervalMonths):'';
+    const nextKm=intervalKm>0?Number(v.currentKm||0)+intervalKm:null;
+    state.manualSchedules[scheduleKey(v,id)]=Object.assign({},s,{
+      lastDate:today,lastKm:Number(v.currentKm||0),nextDate,nextKm
+    });
+    save();render();
+    alert(item.title+' completed. '+(nextDate||nextKm!==null?'Next reminder recalculated using your chosen repeat interval.':'Enter the next service date or mileage to enable another reminder.'));
+  };
+
+  const prevVehicle=renderVehicle,prevHome=renderHome,prevSettings=renderSettings;
+  renderVehicle=function(){
+    prevVehicle();
+    const v=state.vehicles[slot];if(v)$('vehiclePage').insertAdjacentHTML('beforeend',schedulerSection(v));
+  };
+  renderSettings=function(){
+    prevSettings();
+    const v=state.vehicles[slot];if(v)$('settingsPage').insertAdjacentHTML('beforeend',schedulerSection(v));
+  };
+  renderHome=function(){
+    prevHome();
+    const active=state.vehicles.filter(v=>v&&v.type==='car');
+    if(!active.length)return;
+    const data=[];
+    active.forEach(function(v){reminders.forEach(function(item){const st=statusFor(v,item);if(st.type!=='not-set')data.push({v,item,st});});});
+    const due=data.filter(x=>x.st.type==='overdue');
+    const soon=data.filter(x=>x.st.type==='soon');
+    const content='<section><h2>🔔 Wheel Alignment & A/C Reminders</h2>'+
+      '<div class="summary"><div><strong>'+data.length+'</strong>Scheduled</div><div><strong>'+due.length+'</strong>Service Due</div><div><strong>'+soon.length+'</strong>Due Soon</div></div>'+
+      (data.length?data.map(x=>message(x.v,x.item)).join(''):'<p class="muted">No custom reminders yet. Open Vehicles or Settings to set your dates and mileage.</p>')+
+      '<p class="notice">These reminders use your chosen dates and mileage only. A/C flushing and wheel alignment are condition-based, not mandatory routine jobs.</p></section>';
+    $('home').insertAdjacentHTML('afterbegin',content);
+  };
+  const originalRemoveVehicle=removeVehicle;
+  removeVehicle=function(){
+    const i=slot,had=Boolean(state.vehicles[i]);
+    originalRemoveVehicle();
+    if(had&&!state.vehicles[i]){
+      for(const item of reminders)delete state.manualSchedules[String(i)+'|'+item.id];
+      save();render();
+    }
+  };
+  const previousRecord=saveRecord;
+  saveRecord=function(){
+    const v=state.vehicles[slot];
+    const date=$('recDate')?.value, km=$('recKm')?.value;
+    const serviced=[...document.querySelectorAll('.itemCheck:checked')].map(x=>x.value);
+    const oldLength=state.records.length;
+    previousRecord();
+    if(state.records.length===oldLength||!v||!date||km==='')return;
+    for(const item of reminders) {
+      if(!serviced.includes(item.id))continue;
+      const old=scheduleFor(v,item.id),months=Number(old.intervalMonths||0),kms=Number(old.intervalKm||0);
+      state.manualSchedules[scheduleKey(v,item.id)]=Object.assign({},old,{
+        lastDate:date,lastKm:Number(km),
+        nextDate:months>0?addMonths(date,months):'',
+        nextKm:kms>0?Number(km)+kms:null
+      });
+    }
+    save();render();
+  };
+  render();
 })();
 </script>
 </body></html>
