@@ -97,7 +97,7 @@ function slotBar(){
 function garageScreen(){
  selectFilled();
  const v=vehicle();
- if(!v)return '<div class="g-card g-empty"><div class="g-empty-icon">🚘</div><strong>Welcome to Izzyan’s Garage</strong><p>Add your first vehicle to track maintenance, renewal dates, costs and fuel.</p><button class="g-primary" data-ga="newVehicle">+ Add Vehicle</button></div>';
+ if(!v)return '<div class="g-card g-empty"><div class="g-empty-icon">🚘</div><strong>Welcome to Çar Service</strong><p>Add your first vehicle to track maintenance, renewal dates, costs and fuel.</p><button class="g-primary" data-ga="newVehicle">+ Add Vehicle</button></div>';
  const top=slotBar()+vehicleCard(v)+tiles(v);
  return top+'<div class="g-section">'+secTitle('Upcoming Service Items','allItems')+serviceItems(v,false)+'</div>'+
  '<div id="gCustomRemindersAnchor"></div>' +
@@ -151,7 +151,7 @@ function show(modeNext,pageNext){
 }
 function decorateLegacy(){
  const titleMap={vehiclePage:'Edit Vehicle',recordPage:'Service Records',settingsPage:'Settings',home:'Garage'};
- if(mode==='legacy'){gHeader.querySelector('.g-title').textContent=titleMap[page]||'Izzyan’s Garage';}
+ if(mode==='legacy'){gHeader.querySelector('.g-title').textContent=titleMap[page]||'Çar Service';}
  if(page!=='vehiclePage')return;
  const form=document.getElementById('vehicleForm');if(!form||form.dataset.gDecorated)return;form.dataset.gDecorated='1';
  const v=vehicle();
@@ -162,8 +162,8 @@ function decorateLegacy(){
 function renderGarage(){
  if(mode==='legacy'){decorateLegacy();return;}
  selectFilled();
- const headings={garage:'Izzyan’s Garage',reminders:'Reminders',history:'Service Records',fuel:'Log Fuel'};
- gHeader.innerHTML='<div style="display:flex;align-items:center;gap:4px">'+(mode!=='garage'?'<button class="g-ico" data-ga="garage" aria-label="Go back">‹</button>':'')+'<span class="g-title">'+e(headings[mode]||'Izzyan’s Garage')+'</span></div><div class="g-ctl"><button class="g-ico" data-ga="reminders" aria-label="Reminders">♧</button><button class="g-ico" data-ga="settings" aria-label="Settings">⚙</button></div>';
+ const headings={garage:'Çar Service',reminders:'Reminders',history:'Service Records',fuel:'Log Fuel'};
+ gHeader.innerHTML='<div style="display:flex;align-items:center;gap:4px">'+(mode!=='garage'?'<button class="g-ico" data-ga="garage" aria-label="Go back">‹</button>':'')+'<span class="g-title">'+e(headings[mode]||'Çar Service')+'</span></div><div class="g-ctl"><button class="g-ico" data-ga="reminders" aria-label="Reminders">♧</button><button class="g-ico" data-ga="settings" aria-label="Settings">⚙</button></div>';
  garages.innerHTML=mode==='garage'?garageScreen():mode==='reminders'?remindersScreen():mode==='history'?historyScreen():mode==='fuel'?fuelScreen():garageScreen();
  if(mode==='garage'&&typeof window.renderGarageCustomMaintenance==='function')window.renderGarageCustomMaintenance();
  gBottom.innerHTML=[['garage','🚘','Garage'],['reminders','🔔','Reminder'],['history','📋','Service'],['settings','👤','Profile']].map(([id,ic,label])=>'<button class="'+(mode===id?'active':'')+'" data-ga="'+id+'"><span class="g-navico">'+ic+'</span>'+label+'</button>').join('');
