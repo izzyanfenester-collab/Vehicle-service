@@ -33,5 +33,5 @@
 #geOverlay .geDialog p{color:#5d6b77;margin:0 0 22px;line-height:1.5;font-size:13px}
 #geOverlay .geDialogActions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
 #geOverlay .geDialogActions button{background:transparent;color:#0b6488;font-size:11px;letter-spacing:.2px;padding:10px 7px;min-height:42px}
-#geOverlay .geInputFile{display:none}
+.geInputFile{display:none!important;width:0!important;height:0!important;position:absolute!important;left:-9999px!important}
 @media(max-width:340px){#geOverlay .geTypes{gap:3px}#geOverlay .geType{font-size:10px;min-height:82px}#geOverlay .geType b{font-size:22px}}
