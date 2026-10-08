@@ -101,4 +101,6 @@ document.addEventListener('click',event=>{
 });
 window.renderGarageCustomMaintenance=render;
 window.openGarageCustomMaintenance=open;
+// The Garage page is rendered before this script loads; populate it immediately.
+render();
 })();
