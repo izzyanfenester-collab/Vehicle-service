@@ -6,7 +6,7 @@ const bottom=document.getElementById('gBottom');bottom.parentNode.insertBefore(p
 let open=false;
 const ed=(x)=>esc(x==null?'':x);
 const displayName=()=>state.profile?.displayName||'Garage Owner';
-const garageName=()=>state.profile?.garageName||'Izzyan’s Garage';
+const garageName=()=>state.profile?.garageName||'Çar Service';
 const fmtCost=n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
 function row(icon,title,subtitle,action){
  return '<button class="gpRow" data-gp="'+action+'"><span class="gpRowIcon">'+icon+'</span>'+
@@ -33,7 +33,7 @@ function build(){
  row('💰','Total Maintenance Spending',fmtCost(spending)+' recorded','history')+
  row('⚙️','Settings','Configure reminder intervals and maintenance checklist','maintenance')+
  '</div><div class="gpSection">About</div><div class="gpGroup">'+
- row('ℹ️','Izzyan’s Garage','Version 1.7 · Offline vehicle maintenance','about')+
+ row('ℹ️','Çar Service','Version 1.7 · Offline vehicle maintenance','about')+
  '</div><p class="gpNote">Data is saved locally on your device. No account or cloud service is required. Back up your records before uninstalling the application.</p>';
 }
 function setBottom(){
@@ -62,14 +62,14 @@ function editDialog(){
  const bg=document.createElement('div');bg.className='gpDialogBg';bg.id='gpEditDlg';
  bg.innerHTML='<div class="gpDialog"><h3>Edit Profile</h3>'+
  '<form id="gpForm"><label>Display name</label><input name="displayName" value="'+ed(state.profile?.displayName||'')+'" placeholder="Your name">'+
- '<label>Garage name</label><input name="garageName" value="'+ed(state.profile?.garageName||'Izzyan’s Garage')+'" required maxlength="70">'+
+ '<label>Garage name</label><input name="garageName" value="'+ed(state.profile?.garageName||'Çar Service')+'" required maxlength="70">'+
  '<div class="gpDialogActions"><button class="gpCancel" type="button" data-gp="cancel">Cancel</button><button class="gpSave" type="submit">Save</button></div></form></div>';
  profile.appendChild(bg);
  bg.addEventListener('click',ev=>{if(ev.target===bg)bg.remove();});
 }
 function about(){
  const bg=document.createElement('div');bg.className='gpDialogBg';
- bg.innerHTML='<div class="gpDialog"><h3>Izzyan’s Garage v1.7</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
+ bg.innerHTML='<div class="gpDialog"><h3>Çar Service v1.7</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
  profile.appendChild(bg);
 }
 profile.addEventListener('click',ev=>{
