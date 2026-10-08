@@ -36,7 +36,7 @@ jobs:
 
       - name: Validate JavaScript syntax
         run: |
-          python3 -c "import pathlib,re; h=pathlib.Path('app/src/main/assets/index.html').read_text(); [pathlib.Path('/tmp/vehicle-ui-'+str(i)+'.js').write_text(x) for i,x in enumerate(re.findall(r'<script[^>]*>([\\s\\S]*?)</script>',h))]"
+          python3 -c "import pathlib,re; h=pathlib.Path('app/src/main/assets/index.html').read_text(); [pathlib.Path('/tmp/vehicle-ui-'+str(i)+'.js').write_text(x) for i,x in enumerate(re.findall(r'<script[^>]*>([\s\S]*?)</script>',h))]"
           for script in /tmp/vehicle-ui-*.js; do node --check "$script"; done
 
       - name: Build Debug APK
