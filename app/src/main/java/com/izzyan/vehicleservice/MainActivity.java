@@ -42,8 +42,8 @@ public class MainActivity extends Activity {
         if (url != null && url.startsWith("file:///android_asset/index.html")) {
           String injection="(function(){"
             +"if(document.getElementById('garage-css'))return;"
-            +"var l=document.createElement('link');l.id='garage-css';l.rel='stylesheet';l.href='garage.css';document.head.appendChild(l);"
-            +"var s=document.createElement('script');s.src='garage.js';s.onload=function(){var f=document.createElement('script');f.src='garage-fixes.js';document.body.appendChild(f);};document.body.appendChild(s);"
+            +"['garage.css','garage-edit.css','garage-profile.css'].forEach(function(u){var l=document.createElement('link');l.rel='stylesheet';l.href=u;if(u==='garage.css')l.id='garage-css';document.head.appendChild(l);});"
+            +"var files=['garage.js','garage-fixes.js','garage-edit.js','garage-profile.js'];var i=0;function next(){if(i===files.length)return;var s=document.createElement('script');s.src=files[i++];s.onload=next;document.body.appendChild(s);}next();"
             +"})();";
           v.evaluateJavascript(injection,null);
         }
