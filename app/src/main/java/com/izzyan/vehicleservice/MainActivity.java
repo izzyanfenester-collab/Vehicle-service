@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
           String injection="(function(){"
             +"if(document.getElementById('garage-css'))return;"
             +"var l=document.createElement('link');l.id='garage-css';l.rel='stylesheet';l.href='garage.css';document.head.appendChild(l);"
-            +"var s=document.createElement('script');s.src='garage.js';document.body.appendChild(s);"
+            +"var s=document.createElement('script');s.src='garage.js';s.onload=function(){var f=document.createElement('script');f.src='garage-fixes.js';document.body.appendChild(f);};document.body.appendChild(s);"
             +"})();";
           v.evaluateJavascript(injection,null);
         }
