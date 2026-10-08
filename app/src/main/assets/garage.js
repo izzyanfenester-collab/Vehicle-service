@@ -235,5 +235,8 @@ photoInput.addEventListener('change',function(){
 const originalSave=save;
 window.garageGoBack=function(){if(mode==='legacy'){show('garage');return true;}if(mode!=='garage'){show('garage');return true;}return false;};
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&mode!=='garage'){show('garage');}});
+window.garageShow=show;
+window.garageRefresh=renderGarage;
+window.garageOpenLegacy=function(p){show('legacy',p||'settingsPage');};
 show('garage');
 })();
