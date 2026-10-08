@@ -1,0 +1,31 @@
+
+#gProfile{max-width:780px;margin:0 auto;padding:16px 15px 110px;min-height:70vh;background:#f5f7fb;color:#17243c}
+#gProfile .gpNamecard{background:#fff;border-radius:20px;padding:23px 15px;display:flex;gap:14px;align-items:center;box-shadow:0 5px 16px #17304d12}
+#gProfile .gpAvatar{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:#e6f2fd;color:#0b4266;font-size:33px;flex-shrink:0;border:2px solid white;box-shadow:0 1px 8px #0d254626}
+#gProfile .gpName{flex:1;min-width:0}
+#gProfile .gpName strong{display:block;font-size:20px;line-height:1.3}
+#gProfile .gpName small{color:#8b98a6;font-size:12px}
+#gProfile .gpPill{border-radius:20px;background:#e6f5ec;color:#0e7c4b;font-size:11px;font-weight:750;padding:7px 9px}
+#gProfile .gpGroup{background:#fff;border-radius:18px;overflow:hidden;border:1px solid #edf0f5;box-shadow:0 4px 17px #17304d0d}
+#gProfile .gpSection{font-size:12px;color:#8491a2;letter-spacing:.7px;text-transform:uppercase;margin:23px 5px 10px;font-weight:800}
+#gProfile .gpRow{display:flex;align-items:center;gap:13px;width:100%;min-height:69px;padding:12px 15px;background:#fff;text-align:left;color:#1b304b;border:0;border-bottom:1px solid #eef2f6;border-radius:0}
+#gProfile .gpRow:last-child{border:0}
+#gProfile .gpRowIcon{background:#e8f2f8;border-radius:12px;height:40px;width:40px;display:grid;place-items:center;font-size:21px;flex-shrink:0}
+#gProfile .gpRowTitle{flex:1;min-width:0}
+#gProfile .gpRowTitle strong{display:block;font-size:13.5px;font-weight:760}
+#gProfile .gpRowTitle small{display:block;color:#8b96a6;font-size:11px;line-height:1.35;margin-top:3px}
+#gProfile .gpArrow{color:#9ba6b2;font-size:23px}
+#gProfile .gpStats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}
+#gProfile .gpStat{background:#fff;border:1px solid #edf1f5;border-radius:16px;text-align:center;padding:17px 6px;box-shadow:0 4px 14px #122a4908}
+#gProfile .gpStat strong{display:block;color:#0b4266;font-size:19px}
+#gProfile .gpStat small{color:#8491a0;font-size:11px}
+#gProfile .gpNote{font-size:12px;color:#8190a2;margin:19px 7px;line-height:1.5;text-align:center}
+#gProfile .gpDialogBg{position:fixed;inset:0;background:#08172db3;z-index:180;display:grid;place-items:center;padding:20px}
+#gProfile .gpDialog{background:white;border-radius:17px;padding:21px;width:100%;max-width:440px}
+#gProfile .gpDialog h3{margin:0 0 13px}
+#gProfile .gpDialog label{display:block;margin:12px 0 5px;font-size:12px;color:#7b8899}
+#gProfile .gpDialog input{width:100%;border:1px solid #d8e1ea;border-radius:12px;padding:11px;font-size:14px}
+#gProfile .gpDialogActions{display:flex;gap:10px;margin-top:18px}
+#gProfile .gpDialogActions button{flex:1;border-radius:12px;padding:12px}
+#gProfile .gpCancel{background:#eaf0f6;color:#184666}
+#gProfile .gpSave{background:#0b4266;color:white}
