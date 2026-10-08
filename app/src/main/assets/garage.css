@@ -1,0 +1,71 @@
+
+:root{--garage-navy:#0b4266;--garage-ink:#17243d;--garage-muted:#8492a0;--garage-bg:#f5f7fc;--garage-line:#e9edf5}
+html,body{min-height:100%;background:var(--garage-bg)!important;font-family:system-ui,-apple-system,Roboto,Arial,sans-serif!important;color:var(--garage-ink)}
+body>header,body>nav{display:none!important}
+main{max-width:780px!important;margin:0 auto 100px!important;padding:16px 15px 60px!important}
+main section{border-radius:19px!important;box-shadow:0 5px 18px #0c285010!important}
+main input,main select,main textarea{background:#fff!important}
+#gHeader{background:var(--garage-navy);color:#fff;padding:20px 18px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;z-index:30;min-height:70px}
+#gHeader .g-title{font-size:24px;font-weight:800;letter-spacing:-.6px;line-height:1.25}
+.g-ico{display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:inherit;min-width:39px;height:40px;font-size:23px;padding:5px;border-radius:10px;cursor:pointer}
+.g-ico:active{background:#ffffff24}
+#gHeader .g-ctl{display:flex;gap:4px}
+#gPage{max-width:780px;margin:0 auto;padding:14px 15px 114px}
+.g-section{margin:13px 0 22px}
+.g-card{background:white;border:1px solid #edf0f5;border-radius:19px;box-shadow:0 5px 20px #1127470c}
+.g-slotbar{display:flex;gap:7px;overflow:auto;padding:0 2px 12px;scrollbar-width:none}
+.g-slot{min-width:45px;height:35px;border:1px solid #dae1ea;border-radius:20px;padding:6px 12px;background:white;color:#53667c;white-space:nowrap;font-weight:650;font-size:12px}
+.g-slot.active{background:var(--garage-navy);color:#fff;border-color:var(--garage-navy)}
+.g-vehicle{display:flex;align-items:center;gap:12px;padding:17px 14px;min-height:124px}
+.g-avatar{width:86px;height:86px;min-width:86px;object-fit:cover;border-radius:50%;background:#e1eff8;border:2px solid #fff;box-shadow:0 1px 8px #132b3433}
+.g-avatar-empty{width:86px;height:86px;min-width:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e6f0f8;font-size:43px}
+.g-photo-button{position:relative;background:transparent;padding:0;border:0;flex-shrink:0}
+.g-camera{position:absolute;bottom:-2px;right:-3px;width:29px;height:29px;border:2px solid white;border-radius:50%;background:var(--garage-navy);color:white;display:flex;align-items:center;justify-content:center;font-size:15px}
+.g-vinfo{flex:1;min-width:0;text-align:left}
+.g-vinfo h2{font-size:18px;line-height:1.25;margin:0 0 4px;font-weight:800;color:#192540}
+.g-vinfo small{display:block;margin:4px 0;color:#6a7a8c;font-size:12px}
+.g-vinfo strong{font-size:14px}
+.g-odo{display:flex;align-items:center;gap:5px;color:var(--garage-navy);padding:0;text-align:right;background:none;min-width:74px}
+.g-odo b{font-size:15px;display:block;color:#15243d}
+.g-odo small{color:#758599;font-size:11px}
+.g-chevron{color:#7e8b97;font-size:22px}
+.g-title-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 3px 11px}
+.g-heading{font-size:19px;font-weight:800;margin:0;color:#17223c;letter-spacing:-.4px}
+.g-link{background:none;color:#14517d;padding:5px 2px;font-size:12px;font-weight:750}
+.g-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.g-tile{position:relative;display:flex;align-items:flex-start;text-align:left;gap:9px;padding:15px 11px;min-height:91px;background:white;color:#142542;border:1px solid #eef1f6;border-radius:18px;box-shadow:0 4px 16px #13294b0c}
+.g-tile .g-symbol{width:38px;height:38px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:22px}
+.g-symbol.blue{background:#e5f3ff;color:#00609c}.g-symbol.green{background:#e6f6ed;color:#087747}.g-symbol.gold{background:#fff3d8;color:#9c600c}.g-symbol.purple{background:#efe6ff;color:#6640ab}
+.g-tile-content{min-width:0}.g-tile small{display:block;font-size:11px;color:#8493a2;margin-bottom:4px}.g-tile strong{display:block;font-size:13px;line-height:1.25}.g-tile .g-sub{font-size:10.5px;margin-top:5px;color:#8291a1;line-height:1.3}
+.g-list{overflow:hidden}.g-listrow{display:flex;align-items:center;gap:10px;background:transparent;border:0;border-bottom:1px solid var(--garage-line);border-radius:0;width:100%;color:var(--garage-ink);text-align:left;padding:12px 11px;min-height:66px}
+.g-listrow:last-child{border-bottom:0}.g-itemicon{font-size:22px;width:34px;flex-shrink:0;text-align:center;color:var(--garage-navy)}
+.g-rowtext{flex:1;min-width:0}.g-rowtext strong{display:block;font-size:13.2px;line-height:1.25;font-weight:750}.g-rowtext small{display:block;color:#83909f;font-size:11px;line-height:1.3;margin-top:3px}
+.g-badge{font-size:10.5px;font-weight:750;white-space:nowrap;padding:6px 9px;border-radius:999px;color:#235c79;background:#e9f4fb}
+.g-badge.due{background:#fbe4e3;color:#b12b35}.g-badge.soon{background:#fff0d4;color:#ac6100}.g-badge.ok{background:#e7f6ed;color:#12824e}.g-badge.manual{background:#fff3df;color:#98620e}
+.g-badge.plain{background:#edf1f7;color:#697b8b}
+.g-historydate{min-width:83px;padding-right:8px;border-right:1px solid var(--garage-line);line-height:1.4}
+.g-historydate strong{font-size:12px}.g-historydate small{font-size:10px}
+.g-price{font-size:13px;font-weight:800;white-space:nowrap}
+.g-actions{display:flex;gap:9px;margin:18px 0}.g-primary,.g-secondary{border-radius:15px;flex:1;font-size:14px;font-weight:750;padding:13px 10px;min-height:48px}
+.g-primary{background:var(--garage-navy);color:white}.g-secondary{border:1.5px solid var(--garage-navy);background:white;color:var(--garage-navy)}
+.g-empty{padding:28px 20px;text-align:center;color:#8594a2}.g-empty-icon{font-size:36px;opacity:.6;margin-bottom:8px}
+.g-empty strong{display:block;color:#36475e;font-size:16px;margin-bottom:5px}.g-empty p{font-size:12px;line-height:1.5}
+#gBottom{position:fixed;bottom:0;left:0;right:0;z-index:40;background:#fff;border-top:1px solid #e6eaf2;display:flex;padding:6px 8px max(7px,env(safe-area-inset-bottom));box-shadow:0 -2px 14px #0b1f330a}
+#gBottom button{background:#fff;color:#8a96a3;padding:5px 2px;flex:1;border-radius:12px;font-size:11px;min-height:57px}
+#gBottom button .g-navico{display:block;font-size:23px;margin-bottom:1px}
+#gBottom button.active{color:var(--garage-navy);font-weight:800}
+#gBottom button.active::after{content:'';display:block;background:var(--garage-navy);width:29px;height:2px;margin:4px auto 0}
+.g-fab{position:fixed;right:17px;bottom:86px;width:55px;height:55px;border-radius:50%;z-index:38;background:var(--garage-navy);color:#fff;font-size:34px;box-shadow:0 5px 13px #14284733;display:grid;place-items:center}
+#gFabMenu{position:fixed;right:18px;bottom:149px;z-index:41;background:#fff;padding:8px;border:1px solid #e8edf3;border-radius:18px;box-shadow:0 7px 23px #15243c40;min-width:183px}
+#gFabMenu button{display:block;width:100%;text-align:left;background:white;color:var(--garage-navy);font-size:13px;padding:13px;border-radius:11px}
+.g-field{margin-bottom:12px}.g-field label{display:block;font-size:11px;font-weight:750;color:#8794a3;text-transform:uppercase;margin:0 0 6px}
+.g-field input,.g-field select,.g-field textarea{display:block;width:100%;border:1px solid #e0e6ee;border-radius:12px;padding:12px;background:#fff!important;color:#24314a;font:inherit}
+.g-pad{padding:15px;margin-bottom:13px}.g-note{font-size:12px;color:#728194;line-height:1.5}
+.g-chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.g-chip{background:#edf2f7;color:#31506b;border:1px solid #dae4eb;padding:7px 10px;border-radius:999px;font-size:12px}
+.g-chip.active{background:#d9ecfa;border-color:#1f638e}
+.g-statrow{display:flex;gap:10px;margin:12px 0}.g-stat{flex:1;background:white;border-radius:16px;border:1px solid #eef0f4;padding:14px 10px}
+.g-stat small{font-size:11px;color:#8491a1;display:block}.g-stat b{display:block;font-size:16px;margin-top:3px}
+.g-back{background:transparent;color:white;min-width:38px;padding:4px}
+.g-photo-input{display:none!important}
+.g-soft{background:#f0f5fc;border-radius:13px;padding:12px;margin:10px 0}
+@media(max-width:360px){.g-vinfo h2{font-size:15px}.g-avatar,.g-avatar-empty{width:65px;height:65px;min-width:65px}.g-tile{padding:12px 7px}.g-odo{min-width:60px}.g-tile strong{font-size:12px}.g-badge{font-size:9px;padding:5px 7px}}
