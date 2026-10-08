@@ -164,7 +164,7 @@ function renderGarage(){
  const headings={garage:'Izzyan’s Garage',reminders:'Reminders',history:'Service Records',fuel:'Log Fuel'};
  gHeader.innerHTML='<div style="display:flex;align-items:center;gap:4px">'+(mode!=='garage'?'<button class="g-ico" data-ga="garage" aria-label="Go back">‹</button>':'')+'<span class="g-title">'+e(headings[mode]||'Izzyan’s Garage')+'</span></div><div class="g-ctl"><button class="g-ico" data-ga="reminders" aria-label="Reminders">♧</button><button class="g-ico" data-ga="settings" aria-label="Settings">⚙</button></div>';
  garages.innerHTML=mode==='garage'?garageScreen():mode==='reminders'?remindersScreen():mode==='history'?historyScreen():mode==='fuel'?fuelScreen():garageScreen();
- gBottom.innerHTML=[['garage','🚘','Garage'],['reminders','🔔','Reminder'],['history','📋','Service'],['settings','👤','Settings']].map(([id,ic,label])=>'<button class="'+(mode===id?'active':'')+'" data-ga="'+id+'"><span class="g-navico">'+ic+'</span>'+label+'</button>').join('');
+ gBottom.innerHTML=[['garage','🚘','Garage'],['reminders','🔔','Reminder'],['history','📋','Service'],['settings','👤','Profile']].map(([id,ic,label])=>'<button class="'+(mode===id?'active':'')+'" data-ga="'+id+'"><span class="g-navico">'+ic+'</span>'+label+'</button>').join('');
  fab.style.display=mode==='fuel'?'none':'grid';fabMenu.style.display=menuOpen?'block':'none';
 }
 const originalRender=render, oldRenderVehicle=renderVehicle;
