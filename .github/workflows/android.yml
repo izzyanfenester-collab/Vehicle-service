@@ -42,6 +42,7 @@ jobs:
           node --check app/src/main/assets/garage-fixes.js
           node --check app/src/main/assets/garage-edit.js
           node --check app/src/main/assets/garage-profile.js
+          node --check app/src/main/assets/garage-schedules.js
 
       - name: Build Debug APK
         run: gradle assembleDebug --stacktrace
