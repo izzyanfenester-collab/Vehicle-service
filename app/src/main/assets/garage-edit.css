@@ -1,0 +1,37 @@
+
+#geOverlay{position:fixed;inset:0;z-index:150;background:#f5f7fb;color:#17283f;display:flex;flex-direction:column;font-family:system-ui,-apple-system,Roboto,Arial,sans-serif}
+#geOverlay *{box-sizing:border-box}
+#geOverlay .geHeader{flex:0 0 auto;background:#0b4266;color:white;display:flex;align-items:center;gap:12px;padding:17px 12px;min-height:63px}
+#geOverlay .geHeader h2{font-size:21px;font-weight:750;flex:1;margin:0;letter-spacing:-.4px}
+#geOverlay .geHeadBtn{width:38px;height:38px;font-size:26px;color:white;border:0;background:transparent;display:grid;place-items:center;padding:0}
+#geOverlay .geScroll{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:17px 16px 28px}
+#geOverlay .geSectionLabel{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:#7f8a93;margin:19px 4px 10px}
+#geOverlay .geCard{background:#fff;border-radius:19px;border:1px solid #edf0f5;padding:17px 15px;box-shadow:0 4px 14px #0d274014}
+#geOverlay .gePhotoCard{width:100%;display:flex;align-items:center;gap:15px;border:1px solid #edf0f5;text-align:left;color:#14233c;font-weight:700}
+#geOverlay .gePhoto{width:80px;height:80px;object-fit:cover;border-radius:50%;background:#e4f0f7;border:2px solid #fff;box-shadow:0 2px 7px #1b293c22;flex-shrink:0}
+#geOverlay .gePlaceholder{width:80px;height:80px;display:grid;place-items:center;font-size:39px;border-radius:50%;background:#edf4fa;flex-shrink:0}
+#geOverlay .gePhotoHolder{position:relative}
+#geOverlay .geCamera{position:absolute;right:-3px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:#0b4266;display:grid;place-items:center;border:2px solid white;color:white;font-size:14px}
+#geOverlay .gePhotoText small{display:block;color:#8a96a2;font-size:12px;font-weight:400;margin-top:6px}
+#geOverlay .geTypes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+#geOverlay .geType{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:95px;padding:10px 2px;border:1.5px solid #dde5ee;border-radius:16px;background:#fff;color:#718091;font-size:11px;font-weight:600;gap:7px;line-height:1.1;text-align:center}
+#geOverlay .geType b{font-size:26px;font-weight:normal}
+#geOverlay .geType.selected{color:#0b4266;background:#eaf4fd;border-color:#0b4266}
+#geOverlay .geField{margin:3px 0 19px}
+#geOverlay .geField:last-child{margin-bottom:0}
+#geOverlay label{display:block;margin:0 0 7px;color:#7f8d99;font-size:11px;text-transform:uppercase;font-weight:750;letter-spacing:.5px}
+#geOverlay input,#geOverlay select{width:100%;padding:10px 10px 11px;border:1px solid #dae2eb;border-radius:11px;color:#17263b;background:white;font-size:15px;font-weight:550}
+#geOverlay input:focus,#geOverlay select:focus{outline:2px solid #b4d9f6;border-color:#4786af}
+#geOverlay .geCols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+#geOverlay .geActionBar{background:white;border-top:1px solid #e4eaf2;padding:12px 16px max(15px,env(safe-area-inset-bottom));display:flex;gap:10px;flex-shrink:0}
+#geOverlay .geSave{flex:1;background:#0b4266;color:#fff;border-radius:14px;font-size:15px;min-height:47px}
+#geOverlay .geDelete{background:#f7e8e8;color:#a72c30;border-radius:14px}
+#geOverlay .geHelp{font-size:12px;line-height:1.45;color:#748397;margin-top:10px}
+#geOverlay .geDialogBackdrop{position:absolute;inset:0;background:#0b172bad;z-index:3;display:flex;align-items:center;justify-content:center;padding:22px}
+#geOverlay .geDialog{background:#fff;border-radius:15px;padding:22px 17px;width:100%;max-width:380px;box-shadow:0 9px 32px #0004}
+#geOverlay .geDialog h3{font-size:20px;margin:0 0 10px;color:#202e43}
+#geOverlay .geDialog p{color:#5d6b77;margin:0 0 22px;line-height:1.5;font-size:13px}
+#geOverlay .geDialogActions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+#geOverlay .geDialogActions button{background:transparent;color:#0b6488;font-size:11px;letter-spacing:.2px;padding:10px 7px;min-height:42px}
+#geOverlay .geInputFile{display:none}
+@media(max-width:340px){#geOverlay .geTypes{gap:3px}#geOverlay .geType{font-size:10px;min-height:82px}#geOverlay .geType b{font-size:22px}}
