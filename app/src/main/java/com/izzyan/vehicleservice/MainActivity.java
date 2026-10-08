@@ -1,6 +1,12 @@
 package com.izzyan.vehicleservice;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.util.Base64;
+import android.widget.Toast;
+import android.webkit.JavascriptInterface;
+import java.io.File;
+import java.io.FileOutputStream;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.Gravity;
@@ -122,6 +128,38 @@ public class MainActivity extends Activity {
     view.getSettings().setDomStorageEnabled(true);
     view.getSettings().setAllowFileAccess(true);
     view.getSettings().setDefaultTextEncodingName("UTF-8");
+    view.getSettings().setDatabaseEnabled(true);
+    view.addJavascriptInterface(new Object() {
+      @JavascriptInterface
+      public void openReceipt(String encoded, String mime, String name) {
+        if (encoded == null || encoded.length() > 17000000) {
+          runOnUiThread(() -> Toast.makeText(MainActivity.this,
+            "Receipt too large to open.", Toast.LENGTH_LONG).show());
+          return;
+        }
+        runOnUiThread(() -> {
+          try {
+            byte[] data = Base64.decode(encoded, Base64.DEFAULT);
+            String realMime = ("application/pdf".equals(mime)) ? "application/pdf"
+              : (mime!=null&&mime.startsWith("image/") ? mime : "application/octet-stream");
+            String suffix = "application/pdf".equals(realMime) ? ".pdf"
+              : ("image/png".equals(realMime) ? ".png" : ".jpg");
+            File file = File.createTempFile("service-receipt-", suffix, getCacheDir());
+            try (FileOutputStream stream = new FileOutputStream(file)) {stream.write(data);}
+            Uri uri = Uri.parse("content://" + getPackageName() + ".receipts/" + file.getName());
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, realMime);
+            intent.setClipData(ClipData.newUri(getContentResolver(), "Service receipt", uri));
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(Intent.createChooser(intent, "View service receipt"));
+          } catch (Exception error) {
+            Toast.makeText(MainActivity.this,
+              "No compatible receipt viewer installed.", Toast.LENGTH_LONG).show();
+          }
+        });
+      }
+    }, "CarServiceFiles");
+
     content.addView(view,new FrameLayout.LayoutParams(-1,-1));
     root.addView(content,new FrameLayout.LayoutParams(-1,-1));
     root.addView(statusBackdrop,new FrameLayout.LayoutParams(-1,0,Gravity.TOP));
@@ -143,7 +181,7 @@ public class MainActivity extends Activity {
     view.loadUrl("file:///android_asset/index.html");
   }
   private String dialogTitle(String message) {
-    if(message==null)return "Izzyan's Garage";
+    if(message==null)return "Çar Service";
     String m=message.toLowerCase(java.util.Locale.ROOT);
     if(m.contains("backup")||m.contains("import")||m.contains("export"))return "Backup & Restore";
     if(m.contains("alignment")||m.contains("flushing")||m.contains("reminder")||m.contains("service date"))return "Service Reminder";
@@ -151,7 +189,7 @@ public class MainActivity extends Activity {
     if(m.contains("delete")||m.contains("remove"))return "Confirm Deletion";
     if(m.contains("fuel")||m.contains("fill-up"))return "Fuel Log";
     if(m.contains("vehicle"))return "Vehicle Details";
-    return "Izzyan's Garage";
+    return "Çar Service";
   }
   @Override protected void onActivityResult(int requestCode,int resultCode,Intent data) {
     super.onActivityResult(requestCode,resultCode,data);
