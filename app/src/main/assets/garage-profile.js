@@ -13,6 +13,16 @@ function row(icon,title,subtitle,action){
  '<span class="gpRowTitle"><strong>'+ed(title)+'</strong><small>'+ed(subtitle)+'</small></span><span class="gpArrow">›</span></button>';
 }
 function filled(){return (state.vehicles||[]).filter(Boolean);}
+function notificationsState(){
+ try{
+   const v=window.CarServiceNotifier?.getStatus?.();
+   if(v==='enabled')return 'Enabled · Alerts 7 days before due dates';
+   if(v==='disabled')return 'Blocked by Android · Tap to open notification settings';
+   if(v==='permission_required')return 'Tap to allow Android notifications';
+ }catch(e){}
+ return 'Date reminders require Android notification permission';
+}
+
 function build(){
  const vehicles=filled().length,recs=(state.records||[]).length,fuels=(state.fuelRecords||[]).length;
  const spending=(state.records||[]).reduce((t,x)=>t+Number(x.cost||0),0);
@@ -27,13 +37,16 @@ function build(){
  row('🚗','My Vehicles','Manage vehicles, photos and registration','vehicles')+
  row('🛠️','Maintenance Settings','General service intervals and maintenance checklist','maintenance')+
  row('📅','Reminders','Road tax, insurance and service due dates','reminders')+
+ row('🔔','Phone Notifications',notificationsState(),'notifications')+
+ row('🧪','Test Notification','Send a sample notification to your phone','testNotification')+
  row('📋','Service History','Review maintenance and cost records','history')+
  '</div><div class="gpSection">Data and Preferences</div><div class="gpGroup">'+
  row('💾','Backup & Restore','Export or import your offline records','backup')+
  row('💰','Total Maintenance Spending',fmtCost(spending)+' recorded','history')+
  row('⚙️','Settings','Configure reminder intervals and maintenance checklist','maintenance')+
+ row('📲','Android Notification Settings','Check or change Android permission','notificationSettings')+
  '</div><div class="gpSection">About</div><div class="gpGroup">'+
- row('ℹ️','Çar Service','Version 1.8 · Offline vehicle maintenance','about')+
+ row('ℹ️','Çar Service','Version 1.9 · Offline vehicle maintenance','about')+
  '</div><p class="gpNote">Data is saved locally on your device. No account or cloud service is required. Back up your records before uninstalling the application.</p>';
 }
 function setBottom(){
@@ -69,13 +82,17 @@ function editDialog(){
 }
 function about(){
  const bg=document.createElement('div');bg.className='gpDialogBg';
- bg.innerHTML='<div class="gpDialog"><h3>Çar Service v1.8</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
+ bg.innerHTML='<div class="gpDialog"><h3>Çar Service v1.9</h3><p>Keep up to five vehicles, maintenance plans, fuel records, renewal dates and costs in one offline app. Manual schedules may not match the manufacturer handbook; confirm work with your vehicle service centre.</p><div class="gpDialogActions"><button type="button" class="gpSave" data-gp="dismiss">Close</button></div></div>';
  profile.appendChild(bg);
 }
 profile.addEventListener('click',ev=>{
  const b=ev.target.closest('[data-gp]');if(!b)return;ev.preventDefault();
  const action=b.dataset.gp;
  if(action==='edit'){editDialog();return;}
+ if(action==='notifications'){window.CarServiceNotifier?.requestPermission?.();return;}
+ if(action==='testNotification'){window.CarServiceNotifier?.testNotification?.();return;}
+ if(action==='notificationSettings'){window.CarServiceNotifier?.openSettings?.();return;}
+
  if(action==='cancel'||action==='dismiss'){b.closest('.gpDialogBg')?.remove();return;}
  if(action==='vehicles'){close(true);return;}
  if(action==='reminders'){close();window.garageShow?.('reminders');return;}
@@ -106,6 +123,12 @@ window.garageGoBack=function(){
  if(open){close(true);return true;}
  if(window.garageEditorIsOpen?.()){window.closeGarageVehicleEditor?.();return true;}
  return previousBack?.()||false;
+};
+window.refreshCarNotificationSettings=function(){
+ if(!open)return;
+ const preserveScroll=window.scrollY;
+ profile.innerHTML=build();
+ window.scrollTo(0,preserveScroll);
 };
 window.openGarageProfile=show;
 window.garageProfileIsOpen=()=>open;
