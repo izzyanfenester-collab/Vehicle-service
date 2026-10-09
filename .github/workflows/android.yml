@@ -44,6 +44,7 @@ jobs:
           node --check app/src/main/assets/garage-profile.js
           node --check app/src/main/assets/garage-schedules.js
           node --check app/src/main/assets/garage-receipts.js
+          node --check app/src/main/assets/garage-notifications.js
 
       - name: Build Debug APK
         run: gradle assembleDebug --stacktrace
