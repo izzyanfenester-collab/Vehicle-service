@@ -30,9 +30,11 @@ public class CarNotificationsBridge {
       if(Build.VERSION.SDK_INT>=33&&activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
           !=PackageManager.PERMISSION_GRANTED){
         activity.requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},MainActivity.NOTIFICATION_REQUEST);
-      }else{
+      }else if(ServiceReminderManager.isAllowed(activity)){
         ServiceReminderManager.refresh(activity);
         Toast.makeText(activity,"Vehicle reminders are enabled.",Toast.LENGTH_SHORT).show();
+      }else{
+        openSettings();
       }
     });
   }
