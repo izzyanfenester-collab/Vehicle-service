@@ -29,6 +29,7 @@ import android.webkit.ValueCallback;
 
 public class MainActivity extends Activity {
   private static final int FILE_CHOOSE=9191;
+  static final int NOTIFICATION_REQUEST=9300;
   WebView view;
   private ValueCallback<Uri[]> fileCallback;
 
@@ -64,7 +65,7 @@ public class MainActivity extends Activity {
           String injection="(function(){"
             +"if(document.getElementById('garage-css'))return;"
             +"['garage.css','garage-edit.css','garage-profile.css','garage-schedules.css','garage-receipts.css'].forEach(function(u){var l=document.createElement('link');l.rel='stylesheet';l.href=u;if(u==='garage.css')l.id='garage-css';document.head.appendChild(l);});"
-            +"var files=['garage.js','garage-fixes.js','garage-edit.js','garage-profile.js','garage-schedules.js','garage-receipts.js'];var i=0;function next(){if(i===files.length)return;var s=document.createElement('script');s.src=files[i++];s.onload=next;document.body.appendChild(s);}next();"
+            +"var files=['garage.js','garage-fixes.js','garage-edit.js','garage-profile.js','garage-schedules.js','garage-receipts.js','garage-notifications.js'];var i=0;function next(){if(i===files.length)return;var s=document.createElement('script');s.src=files[i++];s.onload=next;document.body.appendChild(s);}next();"
             +"})();";
           v.evaluateJavascript(injection,null);
         }
@@ -129,6 +130,7 @@ public class MainActivity extends Activity {
     view.getSettings().setAllowFileAccess(true);
     view.getSettings().setDefaultTextEncodingName("UTF-8");
     view.getSettings().setDatabaseEnabled(true);
+    view.addJavascriptInterface(new CarNotificationsBridge(this),"CarServiceNotifier");
     view.addJavascriptInterface(new Object() {
       @JavascriptInterface
       public void openReceipt(String encoded, String mime, String name) {
@@ -190,6 +192,20 @@ public class MainActivity extends Activity {
     if(m.contains("fuel")||m.contains("fill-up"))return "Fuel Log";
     if(m.contains("vehicle"))return "Vehicle Details";
     return "Çar Service";
+  }
+  @Override public void onRequestPermissionsResult(int requestCode,String[] permissions,int[] results) {
+    super.onRequestPermissionsResult(requestCode,permissions,results);
+    if(requestCode==NOTIFICATION_REQUEST){
+      ServiceReminderManager.refresh(this);
+      if(view!=null)view.evaluateJavascript(
+        "if(window.refreshCarNotificationSettings){window.refreshCarNotificationSettings();}",null);
+    }
+  }
+  @Override protected void onResume(){
+    super.onResume();
+    ServiceReminderManager.refresh(this);
+    if(view!=null)view.evaluateJavascript(
+      "if(window.refreshCarNotificationSettings){window.refreshCarNotificationSettings();}",null);
   }
   @Override protected void onActivityResult(int requestCode,int resultCode,Intent data) {
     super.onActivityResult(requestCode,resultCode,data);
