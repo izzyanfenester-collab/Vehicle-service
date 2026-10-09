@@ -33,7 +33,8 @@ document.addEventListener('click',function(ev){
       records:incoming.records,
       customIntervals:incoming.customIntervals||{},
       manualSchedules:incoming.manualSchedules||{},
-      fuelRecords:Array.isArray(incoming.fuelRecords)?incoming.fuelRecords:[]
+      fuelRecords:Array.isArray(incoming.fuelRecords)?incoming.fuelRecords:[],
+      profile:incoming.profile&&typeof incoming.profile==='object'?incoming.profile:{}
     };
     save();alert('Backup restored.');if(typeof window.garageGoBack==='function')window.garageGoBack();
   }catch(error){alert('Could not import backup: '+error.message);}
