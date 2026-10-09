@@ -7,6 +7,11 @@ import android.widget.Toast;
 import android.webkit.JavascriptInterface;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.BufferedWriter;
+import java.nio.charset.StandardCharsets;
+import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.Gravity;
@@ -29,6 +34,8 @@ import android.webkit.ValueCallback;
 
 public class MainActivity extends Activity {
   private static final int FILE_CHOOSE=9191;
+  private static final int BACKUP_SAVE_REQUEST=9192;
+  private String pendingBackupJson;
   static final int NOTIFICATION_REQUEST=9300;
   WebView view;
   private ValueCallback<Uri[]> fileCallback;
@@ -131,6 +138,7 @@ public class MainActivity extends Activity {
     view.getSettings().setDefaultTextEncodingName("UTF-8");
     view.getSettings().setDatabaseEnabled(true);
     view.addJavascriptInterface(new CarNotificationsBridge(this),"CarServiceNotifier");
+    view.addJavascriptInterface(new CarBackupBridge(this),"CarServiceBackup");
     view.addJavascriptInterface(new Object() {
       @JavascriptInterface
       public void openReceipt(String encoded, String mime, String name) {
@@ -207,8 +215,74 @@ public class MainActivity extends Activity {
     if(view!=null)view.evaluateJavascript(
       "if(window.refreshCarNotificationSettings){window.refreshCarNotificationSettings();}",null);
   }
+  // Called on the main thread by CarBackupBridge when Export JSON is tapped.
+  void startBackupExport(String json,String filename) {
+    if(pendingBackupJson!=null) {
+      backupFeedback("error","A backup is already awaiting a save location.");
+      return;
+    }
+    if(json==null||json.isEmpty()||json.length()>30000000) {
+      backupFeedback("error","Backup is empty or too large to export.");
+      return;
+    }
+    try {
+      JSONObject parsed=new JSONObject(json);
+      if(parsed.optJSONArray("vehicles")==null||parsed.optJSONArray("records")==null) {
+        backupFeedback("error","Backup data is incomplete. No file was created.");
+        return;
+      }
+      String safe=(filename==null?"":filename).replaceAll("[^A-Za-z0-9_.-]","-");
+      if(safe.length()>110)safe=safe.substring(safe.length()-110);
+      if(safe.isEmpty())safe="Car-Service-Backup.json";
+      if(!safe.endsWith(".json"))safe+=".json";
+      pendingBackupJson=json;
+      Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+      intent.setType("application/json");
+      intent.addCategory(Intent.CATEGORY_OPENABLE);
+      intent.putExtra(Intent.EXTRA_TITLE,safe);
+      startActivityForResult(intent,BACKUP_SAVE_REQUEST);
+    } catch(Exception error) {
+      pendingBackupJson=null;
+      backupFeedback("error","Unable to open Android Save As. Please try again.");
+    }
+  }
+  private void backupFeedback(String status,String message) {
+    if("success".equals(status)||"error".equals(status)) {
+      Toast.makeText(this,message,Toast.LENGTH_LONG).show();
+    }
+    if(view!=null) {
+      String script="if(window.onCarBackupFinished){window.onCarBackupFinished("
+        +JSONObject.quote(status)+","+JSONObject.quote(message)+");}";
+      view.evaluateJavascript(script,null);
+    }
+  }
+  private void finishBackupExport(int resultCode,Intent data) {
+    String json=pendingBackupJson;
+    pendingBackupJson=null;
+    if(resultCode!=Activity.RESULT_OK||data==null||data.getData()==null) {
+      backupFeedback("canceled","Backup export canceled. No file was saved.");
+      return;
+    }
+    if(json==null) {
+      backupFeedback("error","Backup data is unavailable. Please export again.");
+      return;
+    }
+    try(OutputStream stream=getContentResolver().openOutputStream(data.getData());
+        BufferedWriter writer=new BufferedWriter(new OutputStreamWriter(stream,StandardCharsets.UTF_8))) {
+      if(stream==null)throw new java.io.IOException("Storage destination unavailable.");
+      writer.write(json);
+      writer.flush();
+      backupFeedback("success","JSON backup saved successfully to your chosen location.");
+    }catch(Exception error) {
+      backupFeedback("error","Could not save the JSON file. Select a different folder and try again.");
+    }
+  }
   @Override protected void onActivityResult(int requestCode,int resultCode,Intent data) {
     super.onActivityResult(requestCode,resultCode,data);
+    if(requestCode==BACKUP_SAVE_REQUEST) {
+      finishBackupExport(resultCode,data);
+      return;
+    }
     if(requestCode==FILE_CHOOSE&&fileCallback!=null){
       Uri[] result=WebChromeClient.FileChooserParams.parseResult(resultCode,data);
       fileCallback.onReceiveValue(result);fileCallback=null;
